@@ -705,8 +705,6 @@ function getType(modalPropsObj, dom) {
         //}
     }
     //渲染数据
-    for (var z = 0; z < array.length; z++) {
-
         if (modalPropsObj.type == 'recLinked') {
         //执行方式
         for (var q = 0; q < input.length; q++) {
@@ -736,9 +734,9 @@ function getType(modalPropsObj, dom) {
                 inputs[fir].value = modalPropsObj.props[array[1]].value[w].value.substring(4, num);
                 inputs[sec].value = modalPropsObj.props[array[1]].value[w].value.substring(num + 1)
             }
-
         }
     }else {
+            for (var z = 0; z < array.length; z++) {
             if (modalPropsObj.props[array[z]].editorType=="Array"){
                 var div = $(row[z]).next().children();
                 dataRepeat(modalPropsObj.props[array[z]].value, div[0]);
@@ -756,7 +754,7 @@ function getType(modalPropsObj, dom) {
             }else
             if((modalPropsObj.props[array[z]].editorType=="Checkbox")){
                 if ($('#' + propsName).find('input[type=checkbox]').eq(0).val() == modalPropsObj.props[array[z]].value) {
-                    $('#' + propsName).find('input[type=checkbox]').eq(0).checked = true
+                    $('#' + propsName).find('input[type=checkbox]').eq(0)[0].checked = true
                 }
             }
         }
@@ -1333,7 +1331,6 @@ function getRecLinkVal(e) {
 //视屏联动添加功能
 function getOrder(e) {
     e=e||window.event;
-    var myflow = $.myflow;
     //添加输入框
     ($(e.target).parent().next().parent()).append($('<div class="row props-row">' +
         '<div class="col-xs-3 props-row-text">联动命令:</div> ' +
