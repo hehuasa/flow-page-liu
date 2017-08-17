@@ -1,0 +1,113 @@
+<div>
+    <div id="myflow_tools"
+         style="position: absolute; top: 10px; left: 10px; background-color: #fff; width: 100px; cursor: default; padding: 3px;"
+         class="ui-widget-content">
+        <div id="myflow_tools_handle" style="text-align: center;"
+             class="ui-widget-header">工具集</div>
+
+
+        <div class="node" id="myflow_save">
+            <img src="img/save.gif" />&nbsp;&nbsp;保存
+        </div>
+        <div>
+            <hr />
+        </div>
+        <div class="node selectable" id="pointer1">
+            <img src="img/select16.gif" />&nbsp;&nbsp;选择
+        </div>
+        <div class="node selectable" id="path">
+            <img src="img/16/flow_sequence.png" />&nbsp;&nbsp;链接
+        </div>
+        <div>
+            <hr />
+        </div>
+        <div class="node state" id="recEquipmentAlarm"
+             type="recEquipmentAlarm">
+            <img src="img/16/task_recEquipmentAlarm1.png" />&nbsp;&nbsp;接收设备报警
+        </div>
+        <div class="node state" id="remEquipmentAlarm"
+             type="remEquipmentAlarm">
+            <img src="img/16/task_recEquipmentAlarm1.png" />&nbsp;&nbsp;解除设备报警
+        </div>
+        <div class="node state" id="propAlarm"
+             type="propAlarm">
+            <img src="img/16/task_recEquipmentAlarm1.png" />&nbsp;&nbsp;警情推送
+        </div>
+        <div class="node state" id="recEquipmentMessage"
+             type="recEquipmentMessage">
+            <img src="img/16/task_recEquipmentMessage1.png" />&nbsp;&nbsp;接收设备消息
+        </div>
+        <div class="node state" id="clientMutual"
+             type="clientMutual">
+            <img src="img/16/task_recEquipmentMessage1.png" />&nbsp;&nbsp;客户端交互
+        </div>
+        <div class="node state" id="network"
+             type="network">
+            <img src="img/16/task_recEquipmentMessage1.png" />&nbsp;&nbsp;网络命令
+        </div>
+        <div class="node state" id="sendMessage" type="sendMessage">
+            <img src="img/16/task_sendMessage1.png" />&nbsp;&nbsp;发送短信
+        </div>
+        <div class="node state" id="sendMail" type="sendMail">
+            <img src="img/16/task_sendMail1.png" />&nbsp;&nbsp;发送邮件
+        </div>
+        <div class="node state" id="startRec" type="startRec">
+            <img src="img/16/task_startRec1.png" />&nbsp;&nbsp;启动录像
+        </div>
+        <div class="node state" id="recLinked" type="recLinked">
+            <img src="img/16/task_recLinked1.png" />&nbsp;&nbsp;视频联动
+        </div>
+        <div class="node state" id="accessCtr" type="accessCtr">
+            <img src="img/16/task_accessCtr1.png" />&nbsp;&nbsp;门禁控制
+        </div>
+        <div class="node state" id="radioCtr" type="radioCtr">
+            <img src="img/16/task_radioCtr1.png" />&nbsp;&nbsp;广播控制
+        </div>
+        <div class="node state" id="emergencyCtr" type="emergencyCtr">
+            <img src="img/16/task_emergencyCtr1.png" />&nbsp;&nbsp;应急控制
+        </div>
+        <hr />
+
+        <div class="node state" id="start" type="start">
+            <img src="img/16/start_event_empty.png" />&nbsp;&nbsp;开始
+        </div>
+        <div class="node state" id="fork" type="fork">
+            <img src="img/16/gateway_parallel.png" />&nbsp;&nbsp;分支
+        </div>
+        <div class="node state" id="join" type="join">
+            <img src="img/16/gateway_parallel.png" />&nbsp;&nbsp;合并
+        </div>
+        <div class="node state" id="end" type="end">
+            <img src="img/16/end_event_terminate.png" />&nbsp;&nbsp;结束
+        </div>
+        <div class="node state" id="end-cancel" type="cancel">
+            <img src="img/16/end_event_cancel.png" />&nbsp;&nbsp;取消
+        </div>
+        <div class="node state" id="end-error" type="error">
+            <img src="img/16/end_event_error.png" />&nbsp;&nbsp;错误
+        </div>
+    </div>
+
+<div id="myflow_props"
+     style="position: absolute; top: 30; right: 50; background-color: #fff; width: 220px; padding: 3px;"
+     class="ui-widget-content">
+    <div id="myflow_props_handle" class="ui-widget-header">属性</div>
+    <table border="1" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td>aaa</td>
+        </tr>
+        <tr>
+            <td>aaa</td>
+        </tr>
+    </table>
+    <div>&nbsp;</div>
+</div>
+
+<div id="myflow"></div>
+<div style="display: none;">
+    <form action="${ctx}/workFlowController.do?method=saveWFJson" method="post" id="flowForm" name="flowFrom">
+        <input type="hidden" id="jsondata" name="jsondata"/>
+        <input type="hidden" id="flowid" name="flowid" value="${flowid }" />
+    </form>
+</div>
+</div>

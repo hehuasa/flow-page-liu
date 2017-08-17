@@ -1,0 +1,119 @@
+﻿<html>
+<head>
+<title>新建流程</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link type="text/css" href="js/lib/jquery-ui-1.8.4.custom/css/smoothness/jquery-ui-1.8.4.custom.css" rel="stylesheet" />
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="css/flow.css">
+	<script type="text/javascript" src="js/lib/raphael-min.js"></script>
+	<script type="text/javascript" src="js/lib/jquery-ui-1.8.4.custom/js/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="js/lib/jquery-ui-1.8.4.custom/js/jquery-ui-1.8.4.custom.min.js"></script>
+	<script type="text/javascript" src="js/flow/json.js"></script>
+
+</head>
+<body>
+	<div id="myflow_tools" class="ui-widget-content flow-tools">
+		<div id="myflow_tools_handle" class="flow-tools-title">工具集</div>
+		<button class="node btn btn-success btn-block flow-tools-btn" id="myflow_save">
+			<img src="img/save.gif" /><span>&nbsp;&nbsp;保存</span>
+		</button>
+		<button class="node btn btn-primary btn-block" id="pointer1">
+			<img src="img/select16.gif" />&nbsp;&nbsp;选择
+		</button>
+		<button class="node selectable btn btn-info btn-block" id="path">
+			<span class="caret"></span>&nbsp;&nbsp;链接
+		</button>
+		<div class="flow-tools-act"></div>
+		<div class="node state" id="recEquipmentAlarm"
+			type="recEquipmentAlarm">
+			<img src="img/16/task_recEquipmentAlarm1.png" />&nbsp;&nbsp;接收设备报警
+		</div>
+		<div class="node state" id="remEquipmentAlarm"
+			type="remEquipmentAlarm">
+			<img src="img/16/task_recEquipmentAlarm1.png" />&nbsp;&nbsp;解除设备报警
+		</div>
+		<div class="node state" id="propAlarm"
+			type="propAlarm">
+			<img src="img/16/task_recEquipmentAlarm1.png" />&nbsp;&nbsp;警情推送
+		</div>
+		<div class="node state" id="recEquipmentMessage"
+			type="recEquipmentMessage">
+			<img src="img/16/task_recEquipmentMessage1.png" />&nbsp;&nbsp;接收设备消息
+		</div>
+		<div class="node state" id="clientMutual"
+			type="clientMutual">
+			<img src="img/16/task_recEquipmentMessage1.png" />&nbsp;&nbsp;客户端交互
+		</div>
+		<div class="node state" id="network"
+			type="network">
+			<img src="img/16/task_recEquipmentMessage1.png" />&nbsp;&nbsp;网络命令
+		</div>
+		<div class="node state" id="sendMessage" type="sendMessage">
+			<img src="img/16/task_sendMessage1.png" />&nbsp;&nbsp;发送短信
+		</div>
+		<div class="node state" id="sendMail" type="sendMail">
+			<img src="img/16/task_sendMail1.png" />&nbsp;&nbsp;发送邮件
+		</div>
+		<div class="node state" id="startRec" type="startRec">
+			<img src="img/16/task_startRec1.png" />&nbsp;&nbsp;启动录像
+		</div>
+		<div class="node state" id="recLinked" type="recLinked">
+			<img src="img/16/task_recLinked1.png" />&nbsp;&nbsp;视频联动
+		</div>
+		<div class="node state" id="accessCtr" type="accessCtr">
+			<img src="img/16/task_accessCtr1.png" />&nbsp;&nbsp;门禁控制
+		</div>
+		<div class="node state" id="radioCtr" type="radioCtr">
+			<img src="img/16/task_radioCtr1.png" />&nbsp;&nbsp;广播控制
+		</div>
+		<div class="node state" id="emergencyCtr" type="emergencyCtr">
+			<img src="img/16/task_emergencyCtr1.png" />&nbsp;&nbsp;应急控制
+		</div>
+		<hr />
+
+		<div class="node state btn btn-primary btn-block" id="start" type="start">
+			<img src="img/16/start_event_empty.png" />&nbsp;&nbsp;开始
+		</div>
+		<div class="node state btn btn-info btn-block" id="fork" type="fork">
+			<img src="img/16/gateway_parallel.png" />&nbsp;&nbsp;分支
+		</div>
+		<div class="node state btn btn-primary btn-block" id="join" type="join">
+			<img src="img/16/gateway_parallel.png" />&nbsp;&nbsp;合并
+		</div>
+		<div class="node state btn btn-info btn-block" id="end" type="end">
+			<img src="img/16/end_event_terminate.png" />&nbsp;&nbsp;结束
+		</div>
+		<div class="node state btn btn-danger btn-block" id="end-cancel" type="cancel">
+			<img src="img/16/end_event_cancel.png" />&nbsp;&nbsp;取消
+		</div>
+		<div class="node state btn btn-warning btn-block" id="end-error" type="error">
+			<img src="img/16/end_event_error.png" />&nbsp;&nbsp;错误
+		</div>
+	</div>
+
+	<div id="myflow_props"
+		class="ui-widget-content flow-props">
+		<div id="myflow_props_handle" class=" flow-tools-title">属性</div>
+		<table border="1" width="100%" cellpadding="0" cellspacing="0">
+			<tr>
+				<td>aaa</td>
+			</tr>
+			<tr>
+				<td>aaa</td>
+			</tr>
+		</table>
+		<div>&nbsp;</div>
+	</div>
+
+	<div id="myflow" class="flowBox"></div>
+	<div style="display: none;">
+		<form  method="post" id="flowForm" name="flowFrom">
+			<input type="hidden" id="jsondata" name="jsondata"/>
+			<input type="hidden" id="flowid" name="flowid" value="${flowid }" />
+		</form>
+	</div>
+	<script type="text/javascript" src="js/flow/myflow.js"></script>
+	<script type="text/javascript" src="js/flow/myflow.jpdl3.js"></script>
+	<script type="text/javascript" src="js/flow/myflow.editors.js"></script>
+</body>
+</html>

@@ -1,0 +1,720 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>新建流程</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link type="text/css" href="js/lib/jquery-ui-1.8.4.custom/css/smoothness/jquery-ui-1.8.4.custom.css"
+          rel="stylesheet"/>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/flow.css">
+    <link rel="stylesheet" href="css/zTreeStyle/zTreeStyle.css">
+    <script type="text/javascript" src="js/lib/raphael-min.js"></script>
+
+    <!--<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.js"></script>-->
+    <script src="js/flow/jquery.js"></script>
+    <!--<script type="text/javascript" src="../js/lib/jquery-ui-1.8.4.custom/js/jquery-1.4.2.min.js"></script>-->
+    <script type="text/javascript" src="js/bootstrap.js"></script>
+    <!--<script type="text/javascript" src="../js/lib/jquery-ui-1.8.4.custom/js/jquery-ui-1.8.4.custom.min.js"></script>-->
+    <script src="js/jQuery-ui.js"></script>
+    <script src="js/jquery.ztree.all.js"></script>
+    <script src="js/bootstrap-paginator.js"></script>
+
+
+</head>
+<body>
+<div id="myflow_tools" class="positionNone" style="z-index: 100">
+    <div class="myflow-title">
+        <div class="myflow-title-title text-center">工作流编辑器</div>
+        <div class="myflow-title-btn ">
+            <input type="text" placeholder="请定义流程名" id="flowName" class="form-control admin-btn" onchange="flowName()">
+            <button class="btn btn-sm btn-info  flow-tools-btn1" id="myflow_startConditions">
+                <span class="glyphicon glyphicon-off"></span><span>&nbsp;&nbsp;启动条件</span>
+            </button>
+            <button class="btn btn-sm btn-info  flow-tools-btn1" id="myflow_save">
+                <span class="glyphicon glyphicon-file"></span><span>&nbsp;&nbsp;保存</span>
+            </button>
+        </div>
+    </div>
+    <div class="myflow-title-tools">
+        <div class="myflow-title-btn ">
+            <div><span class="title-operation">格式与操作</span></div>
+            <button class="btn btn-sm btn-warning selectable flow-tools-btn1" id="path">
+                开始连线
+            </button>
+            <button class="btn btn-sm btn-warning  flow-tools-btn1 btn-save" onclick="showProp(event)">
+                <span class="glyphicon glyphicon-th"></span>&nbsp;&nbsp;属性
+            </button>
+            <button class="btn btn-sm btn-warning flow-tools-btn1" id="xAxis">横轴对齐</button>
+            <button class="btn btn-sm btn-warning flow-tools-btn1" id="yAxis">纵轴对齐</button>
+        </div>
+    </div>
+    <div class="ui-widget-content flow-tools">
+        <div id="myflow_tools_node" class="flow-tools-title" data-toggle="collapse"
+             data-target="#node">起始节点<span class="toggle">+</span><span class="toggle" style="display: none">-</span>
+        </div>
+        <div id="node" class="collapse">
+            <div class="node state btn btn-default btn-block flow-tools-btn" id="start" type="start">
+                <img src="img/16/start_event_empty.png"/>&nbsp;&nbsp;开始
+            </div>
+            <div class="node state btn btn-default btn-block flow-tools-btn" id="fork" type="fork">
+                <img src="img/16/gateway_parallel.png"/>&nbsp;&nbsp;分支
+            </div>
+            <div class="node state btn btn-default btn-block flow-tools-btn" id="end" type="end">
+                <img src="img/16/end_event_terminate.png"/>&nbsp;&nbsp;结束
+            </div>
+        </div>
+        <div id="myflow_tools_handle" class="flow-tools-title" data-toggle="collapse"
+             data-target="#act-node">功能模块<span class="toggle">+</span><span class="toggle"
+                                                                            style="display: none">-</span></div>
+        <div id="act-node" class="flow-tools-act collapse">
+        </div>
+    </div>
+    </div>
+<div id="myflow" class="flowBox"></div>
+<div style="display: none;">
+    <form method="post" id="flowForm" name="flowFrom">
+        <input type="hidden" id="jsondata" name="jsondata"/>
+        <input type="hidden" id="flowid" name="flowid" value="${flowid }"/>
+    </form>
+</div>
+<!--&lt;!&ndash; 模态框（Modal） &ndash;&gt;-->
+<!--<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">开始演示模态框</button>-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title modal-title" id="myModalLabel">属性</h4>
+            </div>
+            <div class="modal-body">
+                <div id="myflow_props"
+                     class="flow-props nopading">
+                    <!--<div id="myflow_props_handle" class=" flow-tools-title">属性</div>-->
+                    <table width="100%" cellpadding="0" cellspacing="0" class="table">
+                        <tr>
+                            <td>aaa</td>
+                        </tr>
+                        <tr>
+                            <td>aaa</td>
+                        </tr>
+                    </table>
+                    <div>&nbsp;</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <!--<button type="button" class="btn btn-primary">提交更改</button>-->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+
+<!--//新属性框-->
+<div class="modal fade" id="Props" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title modal-title" id="myPropsLabel">属性</h4>
+            </div>
+            <div class="modal-body" style="">
+                <div class="row props-row-title">
+                    <div class="col-xs-3 props-row-text ">名称:</div>
+                    <div class="col-xs-9">
+                        <label><input class="props-row-input form-control" type="text" id="prop_name"></label>
+                    </div>
+                </div>
+                <div class="row props-row-title" id="props_time">
+                    <div class="col-xs-3 props-row-text">等待时间:</div>
+                    <div class="col-xs-9" onchange="changeTime(event)">
+                        <label class="radio-inline"><input type="radio" name="time" value="-1">一直等待</label>
+                        <label class="radio-inline"><input type="radio" name="time" value="0">不等待</label>
+                        <label class="radio-inline"><input type="radio" name="time" class="specificTime" value="1">手动输入</label>
+                        <label class="display-none">：<input type="text" name="time" class="specific-time"
+                                                            value=""></label>
+                    </div>
+                </div>
+
+                <div id="recEquipmentAlarm" class="display-none">
+                    <div style="position: relative">
+                        <span class="col-xs-3 props-row-text">添加选项:</span>
+                        <button type="button"
+                                class="col-xs-offset-2 btn btn-primary glyphicon glyphicon-plus dropdown-toggle"
+                                id="dropMenu0" data-toggle="dropdown"></button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropMenu0" onclick="choseli(event)">
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">设备类型</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">指定设备</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">事件类型</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">设备类型:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn" onclick="getEquips(event)"><span
+                                    class="glyphicon glyphicon-th"></span></button>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">指定设备:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type" id="recEquipmentAlarm_equipment"></div>
+                            <button class="btn btn-default prop-btn" onclick="getEquip(event)"><span
+                                    class="glyphicon glyphicon-th"></span></button>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">事件类型:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn" onclick="getEvent(event)"><span
+                                    class="glyphicon glyphicon-th"></span></button>
+                        </div>
+                    </div>
+                </div>
+                <div id="remEquipmentAlarm" class="display-none">
+                    <div style="position: relative">
+                        <span class="col-xs-3 props-row-text">添加选项:</span>
+                        <button type="button"
+                                class="col-xs-offset-2 btn btn-primary glyphicon glyphicon-plus dropdown-toggle"
+                                id="dropMenu1" data-toggle="dropdown"></button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropMenu1" onclick="choseli(event)">
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">设备类型</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">指定设备</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">事件类型</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">设备类型:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type" id="recEquipmentAlarm_type"></div>
+                            <button class="btn btn-default prop-btn" onclick="getEquips(event)"><span
+                                    class="glyphicon glyphicon-th"></span></button>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">指定设备:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn" onclick="getEquip(event)"><span
+                                    class="glyphicon glyphicon-th"></span></button>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text" id="recEquipmentAlarm_event">事件类型:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn" onclick="getEvent(event)"><span
+                                    class="glyphicon glyphicon-th"></span></button>
+                        </div>
+                    </div>
+                </div>
+                <div id="sendMessage" class="display-none">
+                    <div></div>
+                    <div class="row props-row">
+                        <div class="col-xs-3 props-row-text">接收人:</div>
+                        <div class="col-xs-9">
+                            <div></div>
+                            <input class="form-control props-row-input input-num" oninput="getNum(event)"
+                                   onchange="getVal(event)" type="number">
+                        </div>
+                    </div>
+                    <div class="row props-row">
+                        <div class="col-xs-3 props-row-text">发送内容:</div>
+                        <div class="col-xs-9">
+                            <label><textarea placeholder="输入框大小可在右下角拖动" class="form-control input-textarea"
+                                             onchange="getVal(event)"></textarea></label>
+                        </div>
+                    </div>
+                    <div class="row props-row">
+                        <div class="col-xs-3 props-row-text">执行方式:</div>
+                        <div class="col-xs-9">
+                            <label class="radio-inline"><input name="radio" type="radio" value="0">手动</label>
+                            <label class="radio-inline"><input name="radio" type="radio" value="1">自动</label>
+                        </div>
+                    </div>
+                </div>
+                <div id="accessCtr" class="display-none">
+                    <div style="position: relative">
+                        <span class="col-xs-3 props-row-text">添加选项:</span>
+                        <button type="button"
+                                class="col-xs-offset-5 btn btn-primary glyphicon glyphicon-plus dropdown-toggle"
+                                id="dropMenu2" data-toggle="dropdown"></button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropMenu3" onclick="choseli(event)">
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">指定门禁</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">指定区域</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">全厂</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">动作</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">执行方式</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">指定门禁:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn"><span class="glyphicon glyphicon-th"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">指定区域:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn"><span class="glyphicon glyphicon-th"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">全厂:</div>
+                        <div class="col-xs-9">
+                            <label><input type="checkbox" name="holeFac" value="1">全厂</label>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">动作:</div>
+                        <div class="col-xs-9">
+                            <label class="radio-inline"><input type="radio" class="qqww" name="radio" value="1">打开</label>
+                            <label class="radio-inline"><input type="radio" name="radio" value="0">关闭</label>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">执行方式:</div>
+                        <div class="col-xs-9">
+                        <label class="radio-inline"><input type="radio" name="radio1" value="1">手动</label>
+                        <label class="radio-inline"><input type="radio" name="radio1" value="0">自动</label>
+                        </div>
+                    </div>
+                </div>
+                <div id="radioCtr" class="display-none">
+                    <div style="position: relative">
+                        <span class="col-xs-3 props-row-text">添加选项:</span>
+                        <button type="button"
+                                class="col-xs-offset-5 btn btn-primary glyphicon glyphicon-plus dropdown-toggle"
+                                id="dropMenu3" data-toggle="dropdown"></button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropMenu3" onclick="choseli(event)">
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">指定门禁</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">指定区域</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">全厂</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">动作</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">执行方式</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">指定门禁:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn"><span class="glyphicon glyphicon-th"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">指定区域:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn"><span class="glyphicon glyphicon-th"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">全厂:</div>
+                        <div class="col-xs-9">
+                            <label><input type="checkbox" name="holeFac" value="全厂">全厂</label>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">动作:</div>
+                        <div class="col-xs-9">
+                            <label class="radio-inline"><input type="radio" name="radio" value="打开">打开</label>
+                            <label class="radio-inline"><input type="radio" name="radio" value="关闭">关闭</label>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">执行方式:</div>
+                        <div class="col-xs-9">
+                        <label class="radio-inline"><input type="radio" name="radio1" value="0">手动</label>
+                        <label class="radio-inline"><input type="radio" name="radio1" value="1">自动</label>
+                    </div>
+                    </div>
+                </div>
+                <div id="recLinked" class="display-none">
+                    <div style="position: relative">
+                        <span class="col-xs-3 props-row-text">添加命令:</span>
+                        <button type="button" class="col-xs-offset-2 btn btn-primary glyphicon glyphicon-plus"
+                                onclick="getOrder(event)"></button>
+                    </div>
+                    <div class="row props-row">
+                        <div class="col-xs-3 props-row-text">执行方式:</div>
+                        <div class="col-xs-9">
+                            <label class="radio-inline"><input type="radio" name="radio" value="0">手动</label>
+                            <label class="radio-inline"><input type="radio" name="radio" value="1">自动</label>
+                        </div>
+                    </div>
+                </div>
+                <div id="propAlarm" class="display-none">
+                    <div style="position: relative">
+                        <button type="button"
+                                class="col-xs-offset-2 btn btn-primary glyphicon glyphicon-plus dropdown-toggle"
+                                id="dropMenu5" data-toggle="dropdown"></button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropMenu6" onclick="choseli(event)">
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">设备类型</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">指定设备</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">事件类型</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="row props-row">
+                        <div class="col-xs-3 props-row-text">设备类型:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn" onclick="openPages(event)"><span
+                                    class="glyphicon glyphicon-th"></span></button>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">指定设备:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn"><span class="glyphicon glyphicon-th"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">事件类型:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn"><span class="glyphicon glyphicon-th"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="clientMutual" class="display-none">
+                    <div style="position: relative">
+                        <button type="button"
+                                class="col-xs-offset-2 btn btn-primary glyphicon glyphicon-plus dropdown-toggle"
+                                id="dropMenu7" data-toggle="dropdown"></button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropMenu7" onclick="choseli(event)">
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">设备类型</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">指定设备</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">事件类型</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">设备类型:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn"><span class="glyphicon glyphicon-th"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">指定设备:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn"><span class="glyphicon glyphicon-th"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">事件类型:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn"><span class="glyphicon glyphicon-th"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="startRec" class="display-none">
+                    <div style="position: relative">
+                        <button type="button"
+                                class="col-xs-offset-2 btn btn-primary glyphicon glyphicon-plus dropdown-toggle"
+                                id="dropMenu8" data-toggle="dropdown"></button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropMenu8" onclick="choseli(event)">
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">设备类型</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">指定设备</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">事件类型</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">设备类型:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn"><span class="glyphicon glyphicon-th"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">指定设备:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn"><span class="glyphicon glyphicon-th"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">事件类型:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn"><span class="glyphicon glyphicon-th"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="sendMail" class="display-none">
+                    <div style="position: relative">
+                        <button type="button"
+                                class="col-xs-offset-2 btn btn-primary glyphicon glyphicon-plus dropdown-toggle"
+                                id="dropMenu9" data-toggle="dropdown"></button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropMenu9" onclick="choseli(event)">
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">设备类型</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">指定设备</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">事件类型</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">设备类型:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn"><span class="glyphicon glyphicon-th"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">指定设备:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn"><span class="glyphicon glyphicon-th"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">事件类型:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn"><span class="glyphicon glyphicon-th"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="network" class="display-none">
+                    <div style="position: relative">
+                        <button type="button"
+                                class="col-xs-offset-2 btn btn-primary glyphicon glyphicon-plus dropdown-toggle"
+                                id="dropMenu10" data-toggle="dropdown"></button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropMenu10" onclick="choseli(event)">
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">设备类型</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">指定设备</a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#">事件类型</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">设备类型:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn"><span class="glyphicon glyphicon-th"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">指定设备:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn"><span class="glyphicon glyphicon-th"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row props-row display-none">
+                        <div class="col-xs-3 props-row-text">事件类型:</div>
+                        <div class="col-xs-9">
+                            <div class="prop-type"></div>
+                            <button class="btn btn-default prop-btn"><span class="glyphicon glyphicon-th"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer ">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-success" data-dismiss="modal" onclick="saveProps()">保存并关闭</button>
+                <!--<button type="button" class="btn btn-primary">提交更改</button>-->
+            </div>
+        </div>
+    </div><!-- /.modal-content -->
+</div>
+<!--选项弹出框（checkBox）-->
+<div class="modal fade" id="POPUP_BOX" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="POPUP_BOXContent">属性</h4>
+            </div>
+            <div class="modal-body">
+                <form id="POPUP_BOXLabel">
+                    <label><input type="checkbox" value="123"></label>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" onclick="clearCheckBoxVal()">清空</button>
+                <button type="button" class="btn btn-primary" onclick="allCheckBoxVal()">全选</button>
+                <button type="button" class="btn btn-success" data-dismiss="modal" onclick="getCheckBoxVal()">保存并关闭
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--树形结构模态框-->
+<div class="modal fade" id="myTree" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title modal-title" id="myTreeLabel">属性</h4>
+            </div>
+            <div class="modal-body">
+                <ul id="tree" class="ztree"></ul>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-success" data-dismiss="modal" onclick="sure()">保存并关闭</button>
+                    <!--<button type="button" class="btn btn-primary">提交更改</button>-->
+                </div>
+            </div>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal -->
+<!--分页搜索弹出框-->
+<div class="modal fade" id="POPUP_Page" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="POPUP_PageContent">属性</h4>
+            </div>
+            <div class="modal-body">
+                <form id="POPUP_PageLabel" class="form-inline text-center">
+                    <label>关键词搜索：
+                        <input type="text" class="form-control" name="keywords" onchange="changepointno()" value=""
+                               placeholder="请输入pointno">
+                        <input type="text" class="form-control" name="keywords" onchange="changepointname()" value=""
+                               placeholder="请输入pointname">
+                    </label>
+                </form>
+                <div class="relative btn-warp">
+                    <button class="btn btn-primary btn-search" onclick="getPages()">搜索</button>
+                    <button class="btn btn-warning btn-cancel" onclick="clearInput()">清空</button>
+                </div>
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">设备列表</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div id="page-list" class="equip-list"></div>
+                    </div>
+                </div>
+
+                <div class="row page-operation">
+                    <span id="page_operation"></span>
+                    <form class="form-inline pagination pagination-input">
+                        <label class="font-weight-s">每页显示：<input class="form-control page-size" id="page_size"
+                                                                 type="text" onchange="changePageSize(event)">条</label>
+                        <label class="font-weight-s">跳转到：<input class="form-control page-size" id="page_turn"
+                                                                type="text" oninput="changePage(event)">页</label>
+                        <label><input type="button" class="btn btn-primary" onclick="getPages()" value="确定"></label>
+                    </form>
+                </div>
+                <div class="row text-center">
+                    <ul class="pagination" id="page-ul">
+                        <li><a>首页</a></li>
+                        <li><a>上一页</a></li>
+                        <li></li>
+                        <li><a>下一页</a></li>
+                        <li><a>末页</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" onclick="clearCheckBoxVal()">清空</button>
+                <button type="button" class="btn btn-primary" onclick="allCheckBoxVal()">全选</button>
+                <button type="button" class="btn btn-success" data-dismiss="modal" onclick="getCheckBoxVal()">保存并关闭
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<!--右键菜单-->
+<div class="right-menu">
+    <div class="right-menu-btn" onclick="showProp()">属性</div>
+    <div class="right-menu-btn" onclick="save()">保存</div>
+</div>
+<script type="text/javascript" src="js/flow/json.js"></script>
+<script src="js/flow/props.editors.js"></script>
+<script type="text/javascript" src="js/flow/myflow.js"></script>
+<script type="text/javascript" src="js/flow/flow-obj.js"></script>
+<script type="text/javascript" src="js/flow/attribute.js"></script>
+<script type="text/javascript" src="js/flow/myflow.editors.js"></script>
+
+
+</body>
+</html>

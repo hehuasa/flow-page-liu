@@ -1,0 +1,106 @@
+<div style="text-align: center;">
+    <h2>管理流程数据</h2>
+    <p>管理流程数据,修改和删除流程数据</p>
+    <table class="easyui-datagrid" title="管理流程" id="tt"
+           style="width:801px;height:400px;"
+           data-options="rownumbers:true,singleSelect:true,toolbar:toolbar">
+        <thead>
+        <tr>
+            <th data-options="field:'name',width:200">名称</th>
+            <th data-options="field:'flag',width:100">标识</th>
+            <th data-options="field:'level',width:100">级别</th>
+            <th data-options="field:'desc',width:240">描述</th>
+            <th data-options="field:'statue',width:60">是否启用</th>
+            <th data-options="field:'cover',width:60,align:'center'">是否复合</th>
+            <th data-options="field:'id',width:1"></th>
+        </tr>
+        </thead>
+        <c:forEach var="jsonBean" items="${sourceJsonBean }">
+            <tr>
+
+                <td>${jsonBean.name }</td>
+                <td>${jsonBean.flag }</td>
+                <td>${jsonBean.level }</td>
+                <td>${jsonBean.desc }</td>
+                <td>
+                    <c:choose>
+                        <c:when test="${jsonBean.statue }">
+                            是
+                        </c:when>
+                        <c:otherwise>
+                            否
+                        </c:otherwise>
+                    </c:choose>
+                </td>
+                <td>
+                    <c:choose>
+                        <c:when test="${jsonBean.cover }">
+                            是
+                        </c:when>
+                        <c:otherwise>
+                            否
+                        </c:otherwise>
+                    </c:choose>
+                </td>
+                <td>${jsonBean.id }</td>
+            </tr>
+        </c:forEach>
+    </table>
+</div>
+<div style="display: none;">
+    <form action="${ctx}/workFlowController.do?method=edit" method="post" id="flowForm" name="flowFrom">
+        <input type="hidden" id="wfsourceid" name="wfsourceid" value="" />
+    </form>
+</div>
+<script type="text/javascript">
+    $(function() {
+        $('#tt').datagrid('hideColumn','id');
+    });
+
+    var toolbar = [ {
+        text : '新增',
+        iconCls : 'icon-add',
+        handler : function() {
+            var form = document.getElementById("flowForm");
+            form.submit();
+        }
+    }, '-', {
+        text : '修改',
+        iconCls : 'icon-cut',
+        handler : function() {
+            var rows = $('#tt').datagrid('getSelections');
+            if(rows.length > 0){
+                var form = document.getElementById("flowForm");
+                var wfsourceid = document.getElementById("wfsourceid");
+                wfsourceid.value = rows[0].id;
+                form.submit();
+            }
+        }
+    }, '-', {
+        text : '删除',
+        iconCls : 'icon-remove',
+        handler : function() {
+            var rows = $('#tt').datagrid('getSelections');
+            if(rows.length > 0){
+                $.ajax({
+                    type : "POST",
+                    url : "${ctx}/workFlowController.do?method=drop&wfsourceid="+rows[0].id,
+                    contentType : "application/json; charset=utf-8",
+                    dataType : "json",
+                    async: false,
+                    success : function(message) {
+                        if (message == true) {
+                            alert("删除成功!");
+                            window.location.reload();
+                        }else{
+                            alert("流程删除失败,请联系管理员查看日志!")
+                        }
+                    },
+                    error : function(message) {
+                        $("#request-process-patent").html("提交数据失败！");
+                    }
+                });
+            }
+        }
+    } ];
+</script>
